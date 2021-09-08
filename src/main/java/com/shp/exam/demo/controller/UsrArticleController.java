@@ -11,9 +11,11 @@ import com.shp.exam.demo.vo.Article;
 
 @Controller
 public class UsrArticleController {
+	// 인스턴트 변수
 	int articlesLastId;
 	private List<Article> articles;
 	
+	// 생성자
 	public UsrArticleController() {
 		articlesLastId = 0;
 		articles = new ArrayList<>();
@@ -21,6 +23,7 @@ public class UsrArticleController {
 		makeTestData();
 	}
 	
+	// 서비스 메서드
 	private void makeTestData() {
 		for (int i = 1; i <= 20; i++) {
 			String title = "제목" + i;
@@ -39,7 +42,23 @@ public class UsrArticleController {
 		
 		return article;
 	}
+	
+	private Article getArticle(int id) {
+		for (Article article : articles) {
+			if (article.getId() == id) {
+				return article;
+			}
+		}
+		return null;
+	}
+	
+	private void deleteArticle(int id) {
+		Article article = getArticle(id);
+		articles.remove(article);
+	}
+	// 서비스 메서드 끝
 
+	// 액션 메서드
 	@RequestMapping("/usr/article/doAdd")
 	@ResponseBody
 	public Article doAdd(String title, String body) {
@@ -54,4 +73,18 @@ public class UsrArticleController {
 		return articles;
 	}
 	
+	@RequestMapping("/usr/article/doDelete")
+	@ResponseBody
+	public String doDelete(int id) {
+		Article article = getArticle(id);
+		
+		if (article == null) {
+			return id + "번 게시물은 존재하지 않습니다.";
+		}
+		
+		deleteArticle(id);
+		
+		return id + "번 게시물을 삭제하였습니다.";
+	}
+	// 액션 메서드 끝
 }
