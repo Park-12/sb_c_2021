@@ -16,6 +16,7 @@ public class MemberService {
 
 	// int = 가입된 회원의 번호임
 	public int join(String loginId, String loginPw, String name, String nickname, String cellphoneNo, String email) {
+		// 로그인 아이디 중복체크
 		Member oldMember = getMemberByLoginId(loginId);
 		
 		// oldMember가 있을 때
@@ -24,8 +25,19 @@ public class MemberService {
 			return -1;
 		}
 		
+		// 이름+이메일 중복체크
+		oldMember = getMemberByNameAndEmail(name, email);
+		
+		if (oldMember != null) {
+			return -2;
+		}
+		
 		memberRepository.join(loginId, loginPw, name, nickname, cellphoneNo, email);
 		return memberRepository.getLastInsertId();
+	}
+
+	private Member getMemberByNameAndEmail(String name, String email) {
+		return memberRepository.getMemberByNameAndEmail(name, email);
 	}
 
 	private Member getMemberByLoginId(String loginId) {
