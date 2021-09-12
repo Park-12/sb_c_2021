@@ -14,9 +14,22 @@ public class MemberService {
 		this.memberRepository = memberRepository;
 	}
 
+	// int = 가입된 회원의 번호임
 	public int join(String loginId, String loginPw, String name, String nickname, String cellphoneNo, String email) {
+		Member oldMember = getMemberByLoginId(loginId);
+		
+		// oldMember가 있을 때
+		// 숫자 리턴
+		if (oldMember != null) { 
+			return -1;
+		}
+		
 		memberRepository.join(loginId, loginPw, name, nickname, cellphoneNo, email);
 		return memberRepository.getLastInsertId();
+	}
+
+	private Member getMemberByLoginId(String loginId) {
+		return memberRepository.getMemberByLoginId(loginId);
 	}
 
 	public Member getMemberById(int id) {
