@@ -17,14 +17,14 @@ public class MemberService {
 	}
 
 	// int = 가입된 회원의 번호임
-	public ResultData join(String loginId, String loginPw, String name, String nickname, String cellphoneNo, String email) {
+	public ResultData<Integer> join(String loginId, String loginPw, String name, String nickname, String cellphoneNo, String email) {
 		// 로그인 아이디 중복체크
 		Member oldMember = getMemberByLoginId(loginId);
 		
 		// oldMember가 있을 때
 		// 숫자 리턴
 		if (oldMember != null) { 
-			return ResultData.from("F-7", Ut.f("'%s'는 이미 사용 중인 로그인 아이디입니다.", loginId));
+			return ResultData.from("F-7", Ut.f("'%s'는 이미 사용 중입니다.", loginId));
 		}
 		
 		// 이름+이메일 중복체크
