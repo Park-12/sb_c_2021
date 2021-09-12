@@ -34,20 +34,20 @@ public class UsrArticleController {
 		if (isLogined == false) {
 			return ResultData.from("F-A", "로그인 후 이용해주세요.");
 		}
-		
+
 		if (Ut.empty(title)) {
 			return ResultData.from("F-1", "title(을)를 입력해주세요.");
 		}
-		
+
 		if (Ut.empty(body)) {
 			return ResultData.from("F-2", "body(을)를 입력해주세요.");
 		}
-		
+
 		// int id = (int) writeArticleRd.getData1();
 		// ResultData<Integer> 하면 형변환 X
 		ResultData<Integer> writeArticleRd = articleService.writeArticle(loginedMemberId, title, body);
 		int id = writeArticleRd.getData1();
-		
+
 		Article article = articleService.getArticle(id);
 
 		return ResultData.newData(writeArticleRd, article);
@@ -57,14 +57,30 @@ public class UsrArticleController {
 	@ResponseBody
 	public ResultData<List<Article>> getArticles() {
 		List<Article> articles = articleService.getArticles();
-		
+
 		return ResultData.from("S-1", "게시물 리스트", articles);
 	}
 
 	@RequestMapping("/usr/article/doDelete")
 	@ResponseBody
-	public ResultData<Integer> doDelete(int id) {
+	public ResultData<Integer> doDelete(HttpSession httpSession, int id) {
+		boolean isLogined = false;
+		int loginedMemberId = 0;
+
+		if (httpSession.getAttribute("loginedMemberId") != null) {
+			isLogined = true;
+			loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+		}
+
+		if (isLogined == false) {
+			return ResultData.from("F-A", "로그인 후 이용해주세요.");
+		}
+
 		Article article = articleService.getArticle(id);
+
+		if (article.getMemberId() != loginedMemberId) {
+			return ResultData.from("F-2", "권한이 없습니다.");
+		}
 
 		if (article == null) {
 			ResultData.from("F-1", Ut.f("%d번 게시물이 존재하지 않습니다.", id));
@@ -93,6 +109,10 @@ public class UsrArticleController {
 	@ResponseBody
 	public ResultData<Article> getArticle(int id) {
 		Article article = articleService.getArticle(id);
+
+		if (article == null) {
+			return ResultData.from("F-1", Ut.f("%d번 게시물이 존재하지 않습니다.", id));
+		}
 
 		if (article == null) {
 			return ResultData.from("F-1", Ut.f("%d번 게시물이 존재하지 않습니다.", id));
